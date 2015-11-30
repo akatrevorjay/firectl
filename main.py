@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from difflib import get_close_matches
 
 import click
 
@@ -8,8 +9,7 @@ application_path = "/usr/share/applications/"
 
 profiles = [os.path.splitext(f)[0] for f in os.listdir(profile_path)]
 applications = [os.path.splitext(f)[0] for f in os.listdir(application_path)]
-installed = [os.path.join(application_path, a + ".desktop")
-             for a in profiles if a in applications]
+installed = [p for p in profiles if p in applications]
 
 
 @click.group()
@@ -23,8 +23,13 @@ def get_desktop(program):
     if os.path.isfile(path):
         return path
     else:
-        raise click.ClickException(
-            "Desktop file for %s does not exist." % program)
+        message = "Desktop file for %s does not exist." % program
+
+        typo = get_close_matches(program, installed, n=1)
+        if len(typo) > 0:
+            message += "\n\nDid you mean %s?" % typo[0]
+
+        raise click.ClickException(message)
 
 
 def replace(filename, condition, transform):
@@ -47,15 +52,14 @@ def check_programs(program):
         raise click.ClickException("No program specified.")
 
     # Check if we have permission to modify global desktop files.
-    if not os.access(installed[0], os.W_OK):
+    if not os.access(get_desktop(installed[0]), os.W_OK):
         raise click.UsageError(
             message="Can't modify desktop files, please execute as root.")
 
     if program[0] == "all":
         program = installed
-    else:
-        program = [get_desktop(p) for p in program]
-    return program
+
+    return [get_desktop(p) for p in program]
 
 
 @cli.command(help="enable firejail for program")
