@@ -6,6 +6,7 @@ import click
 
 profile_path = "/etc/firejail/"
 application_path = "/usr/share/applications/"
+config = "/etc/firejail/firectl.conf"
 
 profiles = [os.path.splitext(f)[0] for f in os.listdir(profile_path)]
 applications = [os.path.splitext(f)[0] for f in os.listdir(application_path)]
@@ -15,6 +16,51 @@ installed = [p for p in profiles if p in applications]
 @click.group()
 def cli():
     pass
+
+
+def get_config():
+    """Get header and config."""
+    header = "# list of enforced firejail profiles\n"
+    try:
+        with open(config, 'r') as f:
+            conf = [l.strip() for l in f.readlines() if not l.startswith('#')]
+    except FileNotFoundError:
+        conf = []
+    return header, conf
+
+
+def write_config(programs, test, combine):
+    """Write config to disk if necessary. Uses test to check if a program has to
+    be added/removed from the config. Programs and conf are combined with
+    combine.
+    """
+    header, conf = get_config()
+    programs = [os.path.splitext(os.path.basename(p))[0] for p in programs]
+
+    write = False
+    for p in programs:
+        if test(p, conf):
+            write = True
+            continue
+
+    if write:
+        lines = header + "\n".join(sorted(combine(programs, conf)))
+        with open(config, 'w') as f:
+            f.writelines(lines)
+
+
+def add_config(programs):
+    """Add programs to config."""
+    write_config(programs,
+                 lambda program, conf: program not in conf,
+                 lambda programs, conf: set(conf + programs))
+
+
+def remove_config(programs):
+    """Remove programs from config."""
+    write_config(programs,
+                 lambda program, conf: program in conf,
+                 lambda programs, conf: set(conf) - set(programs))
 
 
 def get_desktop(program):
@@ -73,6 +119,8 @@ def enable(program):
                 lambda l: l.startswith("Exec=") and "firejail" not in l,
                 lambda l: "Exec=firejail " + l[l.find('=') + 1:])
 
+    add_config(programs)
+
 
 @cli.command(help="disable firejail for program")
 @click.argument("program", type=click.STRING, nargs=-1)
@@ -85,6 +133,8 @@ def disable(program):
                 lambda line: line.startswith("Exec=firejail"),
                 lambda line: "Exec=" + line[14:])
 
+    remove_config(programs)
+
 
 @cli.command(help="show status of firejail profiles")
 def status():
@@ -92,18 +142,18 @@ def status():
     enabled = []
     disabled = []
     for p in installed:
-        name = os.path.splitext(os.path.basename(p))[0]
-        with open(p, 'r') as f:
+        with open(get_desktop(p), 'r') as f:
             if "Exec=firejail" in f.read():
-                enabled.append(name)
+                enabled.append(p)
             else:
-                disabled.append(name)
+                disabled.append(p)
 
-    click.echo("%d firejail profiles are enabled" % len(enabled))
+    click.echo("{:<2} firejail profiles are enabled".format(len(enabled)))
     for p in sorted(enabled):
         click.echo("   %s" % p)
+    print()
 
-    click.echo("%d firejail profiles are available and disabled" % len(disabled))
+    click.echo("{:<2} firejail profiles are disabled and available".format(len(disabled)))
     for p in sorted(disabled):
         click.echo("   %s" % p)
 
