@@ -13,6 +13,7 @@ applications = [os.path.splitext(f)[0] for f in os.listdir(application_path)]
 installed = [p for p in profiles if p in applications]
 
 
+@click.version_option()
 @click.group()
 def cli():
     pass
@@ -92,7 +93,7 @@ def replace(filename, condition, transform):
         f.writelines(newfile)
 
 
-def check_programs(program):
+def get_programs(program):
     """Return list of programs to enable / disable."""
     if len(program) == 0:
         raise click.ClickException("No program specified.")
@@ -110,23 +111,24 @@ def check_programs(program):
 
 @cli.command(help="enable firejail for program")
 @click.argument("program", type=click.STRING, nargs=-1)
-def enable(program):
-    """Enable firejail for program."""
-    programs = check_programs(program)
+def enable(program, update_config=True):
+    """Enable firejail for program. Program is tuple/list of program names."""
+    programs = get_programs(program)
 
     for p in programs:
         replace(p,
                 lambda l: l.startswith("Exec=") and "firejail" not in l,
                 lambda l: "Exec=firejail " + l[l.find('=') + 1:])
 
-    add_config(programs)
+    if update_config:
+        add_config(programs)
 
 
 @cli.command(help="disable firejail for program")
 @click.argument("program", type=click.STRING, nargs=-1)
 def disable(program):
-    """Disable firejail for program."""
-    programs = check_programs(program)
+    """Disable firejail for program. Program is tuple/list of program names."""
+    programs = get_programs(program)
 
     for p in programs:
         replace(p,
@@ -153,9 +155,25 @@ def status():
         click.echo("   %s" % p)
     print()
 
-    click.echo("{:<2} firejail profiles are disabled and available".format(len(disabled)))
+    click.echo("{:<2} firejail profiles are disabled and available"
+               .format(len(disabled)))
     for p in sorted(disabled):
         click.echo("   %s" % p)
+
+    header, conf = get_config()
+    disabled = [p for p in conf if p not in enabled]
+    if len(disabled) > 0:
+        click.secho("\n{} firejail profiles are disabled by updates"
+                    .format(len(disabled)), fg="red")
+        click.echo("Please run: sudo firectl restore")
+
+
+@cli.command(help="restore firejail profiles from config")
+def restore():
+    """Re-enable firejail profiles for when desktop files get updated."""
+    header, conf = get_config()
+    if len(conf) > 1:
+        enable.callback(conf, update_config=False)
 
 
 if __name__ == "__main__":
