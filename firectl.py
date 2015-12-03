@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+__version__ = "0.1"
+
 import os
 from difflib import get_close_matches
 
 import click
+
 
 profile_path = "/etc/firejail/"
 application_path = "/usr/share/applications/"
@@ -174,7 +177,3 @@ def restore():
     header, conf = get_config()
     if len(conf) > 1:
         enable.callback(conf, update_config=False)
-
-
-if __name__ == "__main__":
-    cli()
