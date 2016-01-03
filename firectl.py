@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__version__ = "0.2"
+__version__ = "0.2.2"
 
 import os
 from difflib import get_close_matches
@@ -179,5 +179,5 @@ def status():
 def restore():
     """Re-enable firejail profiles for when desktop files get updated."""
     header, conf = get_config()
-    if len(conf) > 1:
+    if len(conf) > 0:
         enable.callback(conf, update_config=False)
