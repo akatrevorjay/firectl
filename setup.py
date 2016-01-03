@@ -24,6 +24,8 @@ setup(
     author="Rahiel Kasim",
     author_email="rahielkasim@gmail.com",
     classifiers=[
+        # "Development Status :: 5 - Production/Stable",
+        # "Development Status :: 6 - Mature",
         "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: End Users/Desktop",

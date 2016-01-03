@@ -153,6 +153,10 @@ def status():
             else:
                 disabled.append(p)
 
+    header, conf = get_config()
+    update_disabled = [p for p in conf if p not in enabled]
+    disabled = [p for p in disabled if p not in update_disabled]
+
     click.echo("{:<2} firejail profiles are enabled".format(len(enabled)))
     for p in sorted(enabled):
         click.echo("   %s" % p)
@@ -163,11 +167,11 @@ def status():
     for p in sorted(disabled):
         click.echo("   %s" % p)
 
-    header, conf = get_config()
-    disabled = [p for p in conf if p not in enabled]
-    if len(disabled) > 0:
+    if len(update_disabled) > 0:
         click.secho("\n{} firejail profiles are disabled by updates"
-                    .format(len(disabled)), fg="red")
+                    .format(len(update_disabled)), fg="red")
+        for p in sorted(update_disabled):
+            click.echo("   %s" % p)
         click.echo("Please run: sudo firectl restore")
 
 
