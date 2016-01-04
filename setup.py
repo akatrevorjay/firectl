@@ -5,7 +5,7 @@ import firectl
 try:
     import pypandoc
     long_description = pypandoc.convert("README.md", "rst")
-except ImportError:
+except:
     long_description = ""
 
 
