@@ -1,10 +1,9 @@
-firectl
+Firectl
 =======
 
-Firectl is a tool to integrate
-[firejail](https://l3net.wordpress.com/projects/firejail/) sandboxing in the
-Linux desktop. Enable firejail for an application and enjoy a more secure
-desktop.
+Firectl is a tool to integrate [firejail](https://firejail.wordpress.com/)
+sandboxing in the Linux desktop. Enable firejail for an application and enjoy a
+more secure desktop.
 
 # Usage
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 
 import os
 from difflib import get_close_matches
@@ -179,5 +179,11 @@ def status():
 def restore():
     """Re-enable firejail profiles for when desktop files get updated."""
     header, conf = get_config()
+
+    # clean config from enabled programs removed from the system
+    removed = [c for c in conf if c not in installed]
+    remove_config(removed)
+    [conf.remove(c) for c in removed]
+
     if len(conf) > 0:
         enable.callback(conf, update_config=False)
