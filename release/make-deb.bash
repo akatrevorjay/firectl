@@ -12,8 +12,10 @@ fi
 fpm -s python -t deb \
     --python-bin python3 --python-pip pip3 \
     -n 'firectl' \
-    -d 'firejail' \
+    -d 'firejail' -d 'python3' \
     -d $click --no-python-dependencies \
+    --python-install-bin '/usr/bin' \
+    --python-install-lib '/usr/lib/python3/dist-packages' \
     --after-install 'deb-postinst.sh' \
     --deb-interest '/usr/share/applications' \
     --before-remove 'deb-prerm.sh' \
