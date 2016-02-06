@@ -1,6 +1,10 @@
 Firectl
 =======
 
+**Note**: Firejail 0.9.38 has a convenient
+[symlink invocation feature](https://l3net.wordpress.com/2016/02/04/firejail-0-9-38-release-announcement/)
+to integrate firejail in the desktop.
+
 Firectl is a tool to integrate [firejail](https://firejail.wordpress.com/)
 sandboxing in the Linux desktop. Enable firejail for an application and enjoy a
 more secure desktop.
@@ -22,7 +26,14 @@ To disable firejail for a program:
 sudo firectl disable firefox
 ```
 
-# Restoring
+# Ubuntu/Debian
+
+For Ubuntu and Debian systems install the deb at
+<https://github.com/rahiel/firectl/releases>.
+
+# Other distro's
+
+## Restoring
 
 Firectl works by modifying the system's desktop files, the files that tell the
 system which user applications are installed and how to run them. When these
@@ -33,16 +44,15 @@ For now you have to manually restore firejail settings after upgrades:
 ``` bash
 sudo firectl restore
 ```
-In the future restoring should be automatic.
 
-# Install
+## Install
 
 Firectl can be installed with pip:
 ``` bash
 sudo pip3 install firectl
 ```
 
-# Uninstall
+## Uninstall
 
 To uninstall firectl:
 ``` bash
