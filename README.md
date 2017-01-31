@@ -1,6 +1,8 @@
 Firectl
 =======
 
+[![License](https://img.shields.io/badge/License-GPLv2+-blue.svg)](https://github.com/rahiel/firectl/blob/master/LICENSE.txt)
+
 **Note**: Firejail 0.9.38 has a convenient
 [symlink invocation feature](https://l3net.wordpress.com/2016/02/04/firejail-0-9-38-release-announcement/)
 to integrate firejail in the desktop.
@@ -47,7 +49,7 @@ sudo firectl restore
 
 ## Install
 
-Firectl can be installed with pip:
+Install firectl with pip:
 ``` bash
 sudo pip3 install firectl
 ```
