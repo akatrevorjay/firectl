@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 __version__ = "1.0"
 
@@ -193,3 +194,7 @@ def restore():
 
     if len(conf) > 0:
         enable.callback(conf, update_config=False)
+
+
+if __name__ == '__main__':
+    cli()
