@@ -5,6 +5,7 @@ import os
 from difflib import get_close_matches
 
 import click
+import six
 
 
 profile_path = "/etc/firejail/"
@@ -147,8 +148,13 @@ def status():
     enabled = []
     disabled = []
     for p in installed:
-        with open(get_desktop(p), 'r') as f:
-            if "Exec=firejail" in f.read():
+        with open(get_desktop(p), 'rb') as f:
+            raw = f.read()
+
+            if isinstance(raw, six.binary_type):
+                raw = raw.decode('utf-8', 'ignore')
+
+            if "Exec=firejail" in raw:
                 enabled.append(p)
             else:
                 disabled.append(p)

@@ -19,7 +19,7 @@ setup(
     license="GPLv2+",
 
     py_modules=["firectl"],
-    install_requires=["click"],
+    install_requires=["click", "six"],
     entry_points={"console_scripts": ["firectl=firectl:cli"]},
 
     author="Rahiel Kasim",
