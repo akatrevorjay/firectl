@@ -9,5 +9,6 @@ python3 setup.py bdist_wheel     # built package
 #gpg --detach-sign -a dist/firectl*.tar.gz
 #gpg --detach-sign -a dist/firectl*.whl
 
-read -p "Password: " password
+read -s -p "Password: " password
+printf "\n"
 twine upload dist/* -p "$password"
